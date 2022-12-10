@@ -6,6 +6,7 @@ sudo apt-get -y update
 sudo apt-get -y install python3-pip
 sudo apt-get -y install unzip
 sudo apt-get -y install pptpd
+sudo apt-get -y install net-tools
 
 sudo python3 -m pip install marshmallow
 sudo python3 -m pip install dataclasses_json

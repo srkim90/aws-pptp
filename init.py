@@ -15,7 +15,6 @@ def main():
         return
     e = PPTPMetadata()
     e.save(instance_name, dns_id, dns_pw, domain_name)
-    os.system("/bin/bash init.sh")
 
 if __name__ == '__main__':
     main()
