@@ -35,4 +35,9 @@ if [ "$CHECK" == "" ]; then
   sudo echo ms-dns 8.8.4.4 >> $OPTION_CONF
 fi
 
-/bin/bash reboot.sh
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+sudo service pptpd restart
+
+chmod 755 reboot.sh
+sudo ln -s /home/ubuntu/aws-pptp/reboot.sh /etc/init.d/reboot.sh
+sudo update-rc.d reboot.sh defaults
