@@ -101,6 +101,7 @@ class DnsUpdate:
             "subdomain": subdomain,
             "IP": ipaddr
         })
+        result_logout = self.sess.get(self.__make_url("user/logout.jsp"))
         return True
 
 

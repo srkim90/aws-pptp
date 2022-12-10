@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sudo ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+
 sudo apt-get -y install software-properties-common
 sudo add-apt-repository universe
 sudo apt-get -y update
@@ -29,8 +31,8 @@ fi
 OPTION_CONF="/etc/ppp/pptpd-options"
 CHECK="`cat ${OPTION_CONF} | grep -v '#'| grep ms_dns`"
 if [ "$CHECK" == "" ]; then
-  sudo echo ms-dns 8.8.8.8 >> OPTION_CONF
-  sudo echo ms-dns 8.8.4.4 >> OPTION_CONF
+  sudo echo ms-dns 8.8.8.8 >> $OPTION_CONF
+  sudo echo ms-dns 8.8.4.4 >> $OPTION_CONF
 fi
 
 /bin/bash reboot.sh
