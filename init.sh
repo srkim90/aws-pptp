@@ -25,6 +25,9 @@ SYSCTL_CONF="/etc/sysctl.conf"
 CHECK="`cat ${SYSCTL_CONF} | grep -v '#'| grep net.ipv4.ip_forward`"
 if [ "$CHECK" == "" ]; then
   sudo echo net.ipv4.ip_forward=1 >> $SYSCTL_CONF
+  sudo echo net.ipv4.conf.all.accept_redirects = 0 >> $SYSCTL_CONF
+  sudo echo net.ipv4.conf.all.send_redirects = 0 >> $SYSCTL_CONF
+  sudo echo net.ipv4.ip_no_pmtu_disc = 1 >> $SYSCTL_CONF
   sudo sysctl -p
 fi
 
@@ -38,6 +41,10 @@ fi
 sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 sudo service pptpd restart
 
+cd /home/*
+cd aws-pptp
 chmod 755 reboot.sh
-sudo ln -s /home/ubuntu/aws-pptp/reboot.sh /etc/init.d/reboot.sh
+ASW_PATH=`pwd`
+sudo ln -s $ASW_PATH/reboot.sh /etc/init.d/reboot.sh
+sudo ln -s $ASW_PATH/reboot.sh /etc/rc5.d/S02reboot.sh
 sudo update-rc.d reboot.sh defaults
