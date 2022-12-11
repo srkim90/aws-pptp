@@ -45,6 +45,16 @@ cd /home/*
 cd aws-pptp
 chmod 755 reboot.sh
 ASW_PATH=`pwd`
-sudo ln -s $ASW_PATH/reboot.sh /etc/init.d/reboot.sh
-sudo ln -s $ASW_PATH/reboot.sh /etc/rc5.d/S02reboot.sh
-sudo update-rc.d reboot.sh defaults
+
+RC_LOCAL="/etc/rc.local"
+if [ -e $RC_LOCAL ]; then
+    echo "$RC_LOCAL File exists."
+    CHECK="`cat ${RC_LOCAL} | grep -v '#'| grep reboot`"
+    if [ "$CHECK" == "" ]; then
+        echo su - pi -c "$ASW_PATH/reboot.sh" >> $RC_LOCAL
+    fi
+else
+  sudo ln -s $ASW_PATH/reboot.sh /etc/init.d/reboot.sh
+  sudo ln -s $ASW_PATH/reboot.sh /etc/rc5.d/S02reboot.sh
+  sudo update-rc.d reboot.sh defaults
+fi
