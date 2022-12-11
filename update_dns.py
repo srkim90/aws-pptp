@@ -1,4 +1,6 @@
 import json
+import time
+from typing import Tuple
 
 import requests
 
@@ -48,7 +50,7 @@ class DnsUpdate:
                 return domain_no
         raise NotImplementedError
 
-    def __get_addrs_no(self, domain_no: int, subdomain: str) -> int:
+    def __get_addrs_no(self, domain_no: int, subdomain: str) -> Tuple[int, str]:
         result = self.sess.post(self.__make_url("/service/dns/get"), data={
             "type": "address",
             "domain_no": domain_no
@@ -84,16 +86,18 @@ class DnsUpdate:
         for item in json.loads(result.text)["data"]["address"]:
             __subdomain = item["subdomain"]
             if __subdomain == subdomain:
-                return item["address_no"]
+                return item["address_no"], item["ip"]
         raise NotImplementedError
 
     def update(self, subdomain: str, ipaddr: str) -> bool:
         self.__login()
         try:
             domain_no = self.__get_domain_no()
-            address_no = self.__get_addrs_no(domain_no, subdomain)
+            address_no, now_ipaddr = self.__get_addrs_no(domain_no, subdomain)
         except NotImplementedError as e:
             return False
+        if now_ipaddr == ipaddr:
+            return True
         result = self.sess.post(self.__make_url("service/dns/modify"), data={
             "type": "address",
             "domain_no": domain_no,
@@ -101,8 +105,12 @@ class DnsUpdate:
             "subdomain": subdomain,
             "IP": ipaddr
         })
+        time.sleep(6)
+        address_no, now_ipaddr = self.__get_addrs_no(domain_no, subdomain)
         result_logout = self.sess.get(self.__make_url("user/logout.jsp"))
-        return True
+        if now_ipaddr == ipaddr:
+            return True
+        return False
 
 
 def main():
@@ -111,7 +119,7 @@ def main():
     passwd = pptp.dns_pw
     domain = pptp.domain_name
     e = DnsUpdate(domain, uid, passwd)
-    e.update("vpn-kr1", "222.12.232.2")
+    e.update("vpn-kr1", "212.12.232.2")
 
 
 if __name__ == '__main__':

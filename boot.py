@@ -1,3 +1,5 @@
+import time
+
 import requests
 
 from metadata_models import load_metadata
@@ -14,8 +16,10 @@ def main():
     passwd = pptp.dns_pw
     domain = pptp.domain_name
     e = DnsUpdate(domain, uid, passwd)
-    e.update(pptp.instance_name, get_public_ip())
-
+    for idx in range(10):
+        if e.update(pptp.instance_name, get_public_ip()) is True:
+            break
+        time.sleep(60 * 2)
 
 if __name__ == '__main__':
     main()
